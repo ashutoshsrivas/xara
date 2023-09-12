@@ -13,6 +13,7 @@ import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useAuthContext } from "../../lib/context/AuthContext";
 import { useRouter } from "next/router";
+import axios from "axios";
 
 function Copyright(props: any) {
   return (
@@ -41,11 +42,13 @@ export default function SignInSide() {
     googleSignIn,
     logOut,
     createuser,
+    apiurl
   }: {
     user?: object | any;
     googleSignIn?: () => void;
     logOut?: () => void;
     createuser?: (id: string, pass: string) => void;
+    apiurl?: string;
   } = useAuthContext();
   const router = useRouter();
   

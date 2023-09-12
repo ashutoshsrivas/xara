@@ -4,18 +4,57 @@ const { db } = require("../firebase");
 
 router.post("/create", async (req, res) => {
   try {
-    // const snapshot = await db.collection("users").get();
-    // snapshot.forEach((doc) => {
-    //   console.log(doc.id, "=>", doc.data());
-    // });
-    const { fname,lname, email } = req.body;
-    const user = await db.collection("users").add({
-      fname,
-      lname,
-      email,
-      recipelist:[],
-    });
-    res.json("done");
+    const { name, email } = req.body;
+    const customdoc = await db.collection("users").doc(email);
+    // Retrieve the document's data
+    customdoc
+      .get()
+      .then((docSnapshot) => {
+        if (docSnapshot.exists) {
+          res.json("User already exists");
+        } else {
+          customdoc
+            .set(
+              {
+                name,
+                email,
+                recipelist: [],
+                deviceList: [],
+                fav: [],
+              },
+              { merge: false }
+            )
+            .then(() => {
+              res.json("User created successfully");
+            });
+        }
+      })
+      .catch((error) => {
+        console.error("Error retrieving document:", error);
+      });
+  } catch (e) {
+    console.log("Error from auth.js", e);
+    res.status(400).send(e);
+  }
+});
+
+router.post("/getdetails", async (req, res) => {
+  try {
+    const { email } = req.body;
+    const customdoc = await db.collection("users").doc(email);
+    // Retrieve the document's data
+    customdoc
+      .get()
+      .then((docSnapshot) => {
+        if (docSnapshot.exists) {
+          res.json(docSnapshot.data());
+        } else {
+          res.json("User Not Found");
+        }
+      })
+      .catch((error) => {
+        console.error("Error retrieving document:", error);
+      });
   } catch (e) {
     console.log("Error from auth.js", e);
     res.status(400).send(e);
